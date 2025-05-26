@@ -1,11 +1,11 @@
 import React from "react";
 import Signup from "./Signup";
 import Dashboard from "./Dashboard";
-import Login from "./Login"
+import Login from "./Login";
+import ForgotPassword from "./ForgotPassword"
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "../contexts/AuthContext"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import PrivateRoute from "./PrivateRoute"
 
 function App() {
   return (
@@ -21,6 +21,7 @@ function App() {
                 <Route exact path="/" Component={Dashboard}/>
                 <Route path="/signup" Component={Signup}/>
                 <Route path="/login" Component={Login}/>
+                <Route path="/forgot-password" Component={ForgotPassword}/>
               </Routes>
             </AuthProvider>
           </Router>
