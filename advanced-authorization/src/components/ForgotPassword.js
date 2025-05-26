@@ -1,28 +1,29 @@
 import React, { useRef, useState } from 'react'
 import { Form, Button, Card, Alert } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 export default function ForgotPassword() {
     const emailRef = useRef()
-    const { login } = useAuth()
+    const { resetPassword } = useAuth()
     const [error, setError] = useState('')
+    const [message, setMessage] = useState('')
     const [loading, setLoading] = useState(false)
-    const history = useNavigate()
 
     async function handleSubmit(e){
         e.preventDefault();
  
         try {
+            setMessage('')
             setError('');
             setLoading(true);
-            // await login(emailRef.current.value, passwordRef.current.value);
+            await resetPassword(emailRef.current.value)
             emailRef.current.value = '';
             // passwordRef.current.value = '';
-            history('/')
+            setMessage('Check your inbox for further instructions')
         } catch (error) {
             console.error(error); 
-            setError("Failed to sign in");
+            setError("Failed to reset password");
         } finally {
             setLoading(false); 
         }
