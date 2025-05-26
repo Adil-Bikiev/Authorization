@@ -32,7 +32,7 @@ export function AuthProvider({children}){
         signup
     }
 
-    reutrn (
+    return (
         <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
