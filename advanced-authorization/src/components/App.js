@@ -5,6 +5,7 @@ import Login from "./Login"
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "../contexts/AuthContext"
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import PrivateRoute from "./PrivateRoute"
 
 function App() {
   return (
