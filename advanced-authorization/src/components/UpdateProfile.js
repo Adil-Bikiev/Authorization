@@ -13,21 +13,18 @@ export default function UpdateProfile() {
     const history = useNavigate()
 
     async function handleSubmit(e){
-        // e.preventDefault();
- 
-        // try {
-        //     setError('');
-        //     setLoading(true);
-        //     await login(emailRef.current.value, passwordRef.current.value);
-        //     emailRef.current.value = '';
-        //     passwordRef.current.value = '';
-        //     history('/')
-        // } catch (error) {
-        //     console.error(error); 
-        //     setError("Failed to sign in");
-        // } finally {
-        //     setLoading(false); 
-        // }
+        e.preventDefault()
+        if(passwordRef.current.value !== passwordConfirmRef.current.value){
+            return setError('Passwords do not match')
+        }
+
+        try{
+            setError('')
+            setLoading(true)
+            history.push('/')
+        } catch {
+            setError('Failed to update an account')
+        }
     }
     
 
@@ -44,11 +41,11 @@ export default function UpdateProfile() {
                         </Form.Group>
                         <Form.Group id='password'> 
                             <Form.Label>Password</Form.Label>
-                            <Form.Control type='password' ref={passwordRef} required placeholder='Leave Blank to keep the same'/>
+                            <Form.Control type='password' ref={passwordRef}  placeholder='Leave Blank to keep the same'/>
                         </Form.Group>
                         <Form.Group id='password-confirm'> 
                             <Form.Label>Password Confirmation</Form.Label>
-                            <Form.Control type='password' ref={passwordConfirmRef} required placeholder='Leave Blank to keep the same'/>
+                            <Form.Control type='password' ref={passwordConfirmRef}  placeholder='Leave Blank to keep the same'/>
                         </Form.Group>
                         <Button disabled={loading} className='w-100' type='submit' style={{ marginTop: "10px" }}>Update Profile</Button>
                     </Form>
