@@ -20,31 +20,44 @@ export default function UpdateProfile() {
         if (passwordRef.current.value !== passwordConfirmRef.current.value) {
             return setError("Passwords do not match")
         }
-
+    
+        const newEmail = emailRef.current.value
+        const newPassword = passwordRef.current.value
+        const emailChanged = newEmail !== currentUser.email
+        const passwordChanged = newPassword !== ""
+    
+        if (emailChanged && passwordChanged) {
+            return setError("You can change either email or password, but not both at the same time.")
+        }
+    
         try {
             setLoading(true)
             setError("")
-
+    
             const password = prompt("Please enter your current password to confirm changes.")
             if (!password) {
                 throw new Error("Password is required for re-authentication.")
             }
-
+    
             const credential = EmailAuthProvider.credential(currentUser.email, password)
             await reauthenticateWithCredential(currentUser, credential)
-
-            if (emailRef.current.value !== currentUser.email) {
-                await verifyBeforeUpdateEmail(currentUser, emailRef.current.value)
+    
+            if (emailChanged) {
+                await verifyBeforeUpdateEmail(currentUser, newEmail)
                 setError("A verification email has been sent to the new email. Please verify before logging in with the new email.")
                 setLoading(false)
+                history("/login")
+                window.location.reload()
                 return
             }
-
-            if (passwordRef.current.value) {
-                await updatePassword(currentUser, passwordRef.current.value)
+    
+            if (passwordChanged) {
+                await updatePassword(currentUser, newPassword)
+                history("/login")
+                return
             }
-
-            history("/")
+    
+            setError("No changes were made.")
         } catch (err) {
             console.error(err)
             switch (err.code) {
@@ -73,7 +86,8 @@ export default function UpdateProfile() {
             setLoading(false)
         }
     }
-
+    
+    
       
     return (
         <>
