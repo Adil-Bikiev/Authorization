@@ -1,7 +1,9 @@
 # 🔐 React Firebase Auth App
 
 This project is a fully functional authentication system built with React and Firebase. It allows users to sign up, log in, reset their passwords, and update their email or password securely using Firebase Authentication. The app uses React Context API to manage the authentication state globally and ensures that only authenticated users can access certain routes or features.
+
 It is designed to serve as a starter template or learning resource for developers looking to integrate Firebase Auth into a React application. All sensitive Firebase credentials are handled via environment variables for security.
+
 ---
 
 ## ✨ Features
