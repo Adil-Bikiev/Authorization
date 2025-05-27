@@ -21,9 +21,11 @@ export default function Login() {
             emailRef.current.value = '';
             passwordRef.current.value = '';
             history('/')
+            window.location.reload();
         } catch (error) {
             console.error(error); 
             setError("Failed to sign in");
+
         } finally {
             setLoading(false); 
         }
