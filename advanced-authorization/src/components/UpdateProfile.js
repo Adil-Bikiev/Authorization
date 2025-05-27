@@ -2,8 +2,8 @@ import React, { useRef, useState } from 'react'
 import { Form, Button, Card, Alert } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useNavigate } from "react-router-dom"
-import { updateEmail, updatePassword } from 'firebase/auth'
-import { auth } from '../firebase'
+import { updatePassword, verifyBeforeUpdateEmail, EmailAuthProvider, reauthenticateWithCredential } from 'firebase/auth'
+
 
 export default function UpdateProfile() {
     const emailRef = useRef()
@@ -14,36 +14,67 @@ export default function UpdateProfile() {
     const [loading, setLoading] = useState(false)
     const history = useNavigate()
 
-    async function handleSubmit(e){
+
+    async function handleSubmit(e) {
         e.preventDefault()
-        if(passwordRef.current.value !== passwordConfirmRef.current.value){
-            return setError('Passwords do not match')
+        if (passwordRef.current.value !== passwordConfirmRef.current.value) {
+            return setError("Passwords do not match")
         }
 
-        const promises = []
-        setError('')
-        setLoading(true)
+        try {
+            setLoading(true)
+            setError("")
 
-        if (emailRef.current.value !== currentUser.email){
-            promises.push(updateEmail(auth.currentUser, emailRef.current.value))
-        }
-        if (passwordRef.current.value){
-            promises.push(updatePassword(auth.currentUser, passwordRef.current.value))
-        }
+            const password = prompt("Please enter your current password to confirm changes.")
+            if (!password) {
+                throw new Error("Password is required for re-authentication.")
+            }
 
-        Promise.all(promises)
-            .then(() => {
-                history('/')
-            })
-            .catch((error) => {
-                console.error(error)
-                setError('Failed to update account')
-            })
-            .finally(() => {
+            const credential = EmailAuthProvider.credential(currentUser.email, password)
+            await reauthenticateWithCredential(currentUser, credential)
+
+            if (emailRef.current.value !== currentUser.email) {
+                await verifyBeforeUpdateEmail(currentUser, emailRef.current.value)
+                setError("A verification email has been sent to the new email. Please verify before logging in with the new email.")
                 setLoading(false)
-            })
+                return
+            }
+
+            if (passwordRef.current.value) {
+                await updatePassword(currentUser, passwordRef.current.value)
+            }
+
+            history("/")
+        } catch (err) {
+            console.error(err)
+            switch (err.code) {
+                case 'auth/wrong-password':
+                    setError("The password you entered is incorrect.")
+                    break
+                case 'auth/too-many-requests':
+                    setError("Too many attempts. Please try again later.")
+                    break
+                case 'auth/email-already-in-use':
+                    setError("The email address is already in use.")
+                    break
+                case 'auth/invalid-email':
+                    setError("The email address is invalid.")
+                    break
+                case 'auth/weak-password':
+                    setError("The password is too weak.")
+                    break
+                case 'auth/requires-recent-login':
+                    setError("Please log in again before updating your account.")
+                    break
+                default:
+                    setError("Failed to update account.")
+            }
+        } finally {
+            setLoading(false)
+        }
     }
 
+      
     return (
         <>
             <Card>

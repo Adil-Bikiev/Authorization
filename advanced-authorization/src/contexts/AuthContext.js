@@ -23,12 +23,12 @@ export function AuthProvider({ children }) {
     function logout(){
         return auth.signOut()
     }
-   
-    function updateEmail(email){
+
+    function updateEmail(email) {
         return currentUser.updateEmail(email)
     }
-
-    function updatePassword(password){
+    
+    function updatePassword(password) {
         return currentUser.updatePassword(password)
     }
 
